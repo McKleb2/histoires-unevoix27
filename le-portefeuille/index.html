@@ -78,6 +78,9 @@ h2{font-size:clamp(1.9rem,8.5vw,2.25rem);line-height:1.05;letter-spacing:-.01em}
 .btn{display:flex;align-items:center;justify-content:center;gap:.6rem;width:100%;min-height:54px;padding:0 1.2rem;font:inherit;font-size:1.0625rem;font-weight:700;color:var(--encre);background:var(--accent);border:1.5px solid var(--accent);border-radius:16px;cursor:pointer}
 .btn:hover{filter:brightness(1.08)}
 a.btn{text-decoration:none;box-sizing:border-box}
+.complete{margin-top:1.5rem;padding:1.1rem 1.2rem;border-radius:16px;border:1.5px solid var(--accent);background:rgba(244,236,220,.06)}
+.complete p{margin:0}
+.complete-title{font-family:var(--display);font-size:1.35rem;font-weight:600;color:var(--accent);margin-bottom:.3rem!important}
 .btn.ghost{color:var(--papier);background:transparent;border-color:rgba(244,236,220,.35)}
 .btn.ghost:hover{border-color:var(--accent)}
 .btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
@@ -336,6 +339,7 @@ function render(){
     html += '</ul>';
     html += '<p class="count">' + (n ? n + ' fin' + (n > 1 ? 's' : '') + ' sur 4 déjà trouvée' + (n > 1 ? 's' : '') + '.' : 'Quatre fins possibles. Chacune t’apprend quelque chose.') + '</p>';
     html += '<button class="btn" type="button" data-to="start">Commencer ' + ARROW + '</button>';
+    if(n >= 4){ html += '<div class="actions"><button class="btn ghost" type="button" data-to="reset">Recommencer à zéro</button><a class="btn ghost" href="../">Voir les autres histoires</a></div>'; }
   } else if(sc.ending){
     html += '<p class="badge">Fin ' + (ENDINGS.indexOf(sc.ending) + 1) + ' sur 4</p>';
     html += '<h2>' + sc.title + '</h2>';
@@ -353,11 +357,19 @@ function render(){
     });
     html += '</ul>';
     html += '<p class="count" style="margin:.7rem 0 0">' + (n >= 4 ? 'Tu as trouvé les 4 fins.' : 'Il te reste ' + (4 - n) + ' fin' + (4 - n > 1 ? 's' : '') + ' à découvrir.') + '</p>';
-    html += '<div class="actions">';
-    if(sc.cta){ html += '<button class="btn" type="button" data-to="' + sc.cta.to + '">' + sc.cta.label + '</button>'; }
-    html += '<button class="btn' + (sc.cta ? ' ghost' : '') + '" type="button" data-to="start">Rejouer, autre chemin</button>';
-    html += '<a class="btn ghost" href="../">Voir les autres histoires</a>';
-    html += '</div>';
+    if(n >= 4){
+      html += '<div class="complete"><p class="complete-title">Bravo, tu as découvert les 4 fins !</p><p>Cette histoire est terminée. Une autre t’attend.</p></div>';
+      html += '<div class="actions">';
+      html += '<a class="btn" href="../">Voir les autres histoires ' + ARROW + '</a>';
+      html += '<button class="btn ghost" type="button" data-to="reset">Recommencer à zéro</button>';
+      html += '</div>';
+    } else {
+      html += '<div class="actions">';
+      if(sc.cta){ html += '<button class="btn" type="button" data-to="' + sc.cta.to + '">' + sc.cta.label + '</button>'; }
+      html += '<button class="btn' + (sc.cta ? ' ghost' : '') + '" type="button" data-to="start">Rejouer, autre chemin</button>';
+      html += '<a class="btn ghost" href="../">Voir les autres histoires</a>';
+      html += '</div>';
+    }
     html += '<p class="foot">Versets : traduction Louis Segond (1910).</p>';
   } else {
     html += '<p class="kicker">' + sc.when + '</p>';
@@ -387,7 +399,20 @@ var sound = { music:true, voice:true, hasVoice:false };
 function safePlay(a){
   try{ var p = a.play(); if(p && p.catch) p.catch(function(){}); }catch(e){}
 }
-function startMusic(){ if(sound.music) safePlay(music); }
+var fadeTimer = null;
+function startMusic(){
+  if(fadeTimer){ clearInterval(fadeTimer); fadeTimer = null; music.volume = MUSIC_VOL; }
+  if(sound.music) safePlay(music);
+}
+/* Après la dernière fin découverte : la musique s'éteint doucement. */
+function fadeMusic(){
+  if(fadeTimer) return;
+  fadeTimer = setInterval(function(){
+    var v = music.volume - 0.02;
+    if(v <= 0){ clearInterval(fadeTimer); fadeTimer = null; music.pause(); music.volume = MUSIC_VOL; }
+    else { music.volume = v; }
+  }, 120);
+}
 function stopVoice(){
   if(voice){ try{ voice.pause(); }catch(e){} voice = null; }
   music.volume = MUSIC_VOL;
@@ -397,7 +422,7 @@ function playVoice(id){
   if(!sound.voice || !sound.hasVoice || id === "intro") return;
   var a = new Audio("audio/vo-" + id + ".mp3");
   a.addEventListener("play", function(){ music.volume = MUSIC_DUCK; });
-  a.addEventListener("ended", function(){ if(voice === a){ voice = null; music.volume = MUSIC_VOL; } });
+  a.addEventListener("ended", function(){ if(voice === a){ voice = null; music.volume = MUSIC_VOL; if(sound.finale) fadeMusic(); } });
   a.addEventListener("error", function(){ if(voice === a){ voice = null; music.volume = MUSIC_VOL; } });
   voice = a;
   safePlay(a);
@@ -424,6 +449,7 @@ try{
 }catch(e){}
 
 function go(id){
+  if(id === "reset"){ state.found = []; saveFound(); id = "intro"; }
   if(!SCENES[id]) return;
   state.scene = id;
   var sc = SCENES[id];
@@ -431,9 +457,11 @@ function go(id){
     state.found.push(sc.ending);
     saveFound();
   }
+  sound.finale = !!(sc.ending && state.found.length >= 4);
   render();
   startMusic();
   playVoice(id);
+  if(sound.finale && !voice) fadeMusic();
 }
 
 app.addEventListener("click", function(e){
