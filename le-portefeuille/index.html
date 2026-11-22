@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le Portefeuille</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* Direction « Lampadaire » : une seule lumière qui change de teinte selon l'humeur de la scène.
+   Colonne étroite, pensée pour être filmée en vertical. La page est volontairement sombre dans les deux thèmes. */
+:root{
+  --papier:#f4ecdc;
+  --doux:#a9a596;
+  --encre:#1a1206;
+  --bg:#0b1120;
+  --sky:#0e1730;
+  --accent:#f2a93b;
+  --lesson-ink:#8a5a0a;
+  --display:Fraunces,Georgia,"Times New Roman",serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){ color-scheme:dark } }
+:root[data-theme="dark"]{ color-scheme:dark }
+body[data-mood="nuit"]{--bg:#0b1120;--sky:#0e1730;--accent:#f2a93b}
+body[data-mood="ombre"]{--bg:#150d0b;--sky:#1d1210;--accent:#e8714f;--lesson-ink:#a3401f}
+body[data-mood="jour"]{--bg:#13110b;--sky:#1c1810;--accent:#f2b441}
+body[data-mood="lumiere"]{--bg:#14110a;--sky:#201a0e;--accent:#f6c453}
+
+*{box-sizing:border-box}
+html{height:100%}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--papier);font-family:var(--body);font-size:1rem;-webkit-text-size-adjust:100%;transition:background-color .5s}
+.wrap{width:100%;max-width:30rem;margin:0 auto}
+
+.hero{position:relative;overflow:hidden;aspect-ratio:390/300}
+.hero svg.ill{display:block;width:100%;height:100%}
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:37%;background:linear-gradient(180deg,transparent,var(--bg));pointer-events:none}
+.sky{fill:var(--sky)}
+.a{fill:var(--accent)}
+.as{stroke:var(--accent)}
+.stop{stop-color:var(--accent)}
+
+.top{position:absolute;top:0;left:0;right:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:1rem 1.25rem}
+.logo{display:block;padding:.3rem .75rem;background:var(--papier);border-radius:999px}
+.logo img{display:block;height:1.65rem;width:auto}
+.toggles{display:flex;gap:.5rem}
+.tog{display:flex;align-items:center;gap:.4rem;min-height:44px;padding:0 .9rem;font:inherit;font-size:.875rem;font-weight:700;color:var(--papier);background:rgba(12,17,28,.55);border:1.5px solid rgba(244,236,220,.28);border-radius:999px;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.tog[aria-pressed="false"]{color:var(--doux);border-style:dashed;text-decoration:line-through}
+.tog svg{width:1rem;height:1rem;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+main{position:relative;z-index:1;padding:0 1.5rem 2.5rem;margin-top:-2.5rem}
+.scene{animation:rise .45s ease-out both}
+@keyframes rise{from{opacity:.3;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.scene{animation:none}body{transition:none}}
+
+.dots{display:flex;gap:6px;margin:0 0 1.15rem;padding:0;list-style:none}
+.dots li{flex:1;height:4px;border-radius:2px;background:rgba(244,236,220,.16);transition:background-color .4s}
+.dots li.on{background:var(--accent)}
+
+.kicker{margin:0 0 .75rem;font-size:.8125rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.where{margin:-.5rem 0 1.1rem;font-family:var(--display);font-style:italic;font-size:1.5rem}
+h1,h2{font-family:var(--display);font-weight:600;margin:0 0 1.1rem;text-wrap:balance}
+h1{font-size:clamp(2.8rem,13vw,3.4rem);line-height:1;letter-spacing:-.02em}
+h1 em{font-weight:400;color:var(--accent)}
+h2{font-size:clamp(1.9rem,8.5vw,2.25rem);line-height:1.05;letter-spacing:-.01em}
+.story p{margin:0 0 .9rem;font-size:1.125rem;line-height:1.55;max-width:65ch}
+.label{margin:1.6rem 0 .75rem;font-size:.8125rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--doux)}
+
+.choices{display:flex;flex-direction:column;gap:.75rem}
+.choice{display:flex;gap:.9rem;align-items:flex-start;width:100%;padding:1rem;text-align:left;font:inherit;font-size:1.0625rem;line-height:1.4;color:var(--papier);background:rgba(244,236,220,.06);border:1.5px solid rgba(244,236,220,.18);border-radius:16px;cursor:pointer;transition:border-color .2s,background-color .2s}
+.choice:hover{border-color:var(--accent);background:rgba(244,236,220,.1)}
+.choice:active{transform:scale(.99)}
+.choice span:last-child{padding-top:.3rem}
+.letter{flex:none;display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;font-family:var(--display);font-size:1.125rem;font-weight:600;color:var(--encre);background:var(--accent)}
+
+.btn{display:flex;align-items:center;justify-content:center;gap:.6rem;width:100%;min-height:54px;padding:0 1.2rem;font:inherit;font-size:1.0625rem;font-weight:700;color:var(--encre);background:var(--accent);border:1.5px solid var(--accent);border-radius:16px;cursor:pointer}
+.btn:hover{filter:brightness(1.08)}
+a.btn{text-decoration:none;box-sizing:border-box}
+.btn.ghost{color:var(--papier);background:transparent;border-color:rgba(244,236,220,.35)}
+.btn.ghost:hover{border-color:var(--accent)}
+.btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.actions{display:flex;flex-direction:column;gap:.65rem;margin-top:1.5rem}
+.choice:focus-visible,.btn:focus-visible,.tog:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:1.4rem 0 .6rem;padding:0;list-style:none}
+.tiles li{display:flex;align-items:center;justify-content:center;height:52px;border-radius:12px;font-family:var(--display);font-size:1.25rem;border:1.5px dashed rgba(244,236,220,.28);color:var(--doux)}
+.tiles li.on{border:0;background:var(--accent);color:var(--encre)}
+.count{margin:0 0 1.5rem;font-size:.875rem;color:var(--doux)}
+
+.badge{display:inline-block;margin:0 0 .9rem;padding:.35rem .75rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--encre);background:var(--accent);border-radius:999px}
+.lesson{margin:1.5rem 0 0;padding:1.35rem 1.25rem;background:var(--papier);color:#1c1710;border-radius:20px}
+.lesson-label{margin:0 0 .5rem;font-size:.75rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--lesson-ink)}
+.lesson-text{margin:0 0 1rem;font-size:1.0625rem;line-height:1.45;font-weight:700}
+.verse{padding-top:.9rem;border-top:1px solid rgba(28,23,16,.18)}
+.verse p{margin:0;font-family:var(--display);font-style:italic;font-size:1.25rem;line-height:1.35}
+.verse .ref{margin:.4rem 0 .6rem;font-family:var(--body);font-style:normal;font-size:.875rem;font-weight:700;color:#5a5243}
+
+.tracker{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0;padding:0;list-style:none}
+.tracker li{display:flex;flex-direction:column;gap:4px;min-height:74px;padding:.75rem;border-radius:14px;border:1.5px dashed rgba(244,236,220,.22);color:var(--doux)}
+.tracker li.on{border:1.5px solid var(--accent);background:rgba(244,236,220,.08);color:var(--papier)}
+.tracker .n{font-size:.75rem;font-weight:700;letter-spacing:.1em;color:var(--doux)}
+.tracker .t{font-family:var(--display);font-size:.95rem;line-height:1.2}
+.foot{margin:1.4rem 0 0;font-size:.8125rem;color:var(--doux)}
+
+.sign{display:flex;flex-direction:column;align-items:center;gap:.9rem;margin:0 1.5rem;padding:1.6rem 0 2.2rem;border-top:1px solid rgba(244,236,220,.12)}
+.sign img{display:block;width:132px;height:auto;opacity:.82}
+</style>
+</head>
+<body data-mood="nuit">
+<div class="wrap">
+  <div class="hero">
+    <header class="top">
+      <span class="logo"><img src="../commun/logo.png" alt="UneVoix27" width="228" height="56"></span>
+      <div class="toggles">
+        <button class="tog" id="tog-music" type="button" aria-pressed="true" aria-label="Musique">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>Musique
+        </button>
+        <button class="tog" id="tog-voice" type="button" aria-pressed="true" aria-label="Voix off" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3"/></svg>Voix
+        </button>
+      </div>
+    </header>
+    <div id="ill"></div>
+  </div>
+  <main id="app" aria-live="polite"></main>
+  <footer class="sign">
+    <img src="../commun/logo-eglise.png" alt="Église adventiste du septième jour" width="560" height="346">
+  </footer>
+</div>
+
+<script>
+/* ===== ILLUSTRATIONS (une par lieu, teintées par l'humeur) ===== */
+var ILL = {
+  bus: '<defs><radialGradient id="g"><stop offset="0" class="stop" stop-opacity=".55"/><stop offset="1" class="stop" stop-opacity="0"/></radialGradient></defs>'
+    + '<rect width="390" height="300" class="sky"/>'
+    + '<g fill="#f4ecdc"><circle cx="40" cy="40" r="1.4" opacity=".6"/><circle cx="120" cy="24" r="1" opacity=".5"/><circle cx="200" cy="58" r="1.2" opacity=".4"/><circle cx="90" cy="84" r=".9" opacity=".5"/><circle cx="360" cy="30" r="1.1" opacity=".4"/></g>'
+    + '<circle cx="296" cy="96" r="150" fill="url(#g)"/>'
+    + '<polygon points="286,104 306,104 380,292 212,292" class="a" opacity=".10"/>'
+    + '<rect y="288" width="390" height="12" fill="#1a2030"/>'
+    + '<rect x="292" y="96" width="7" height="196" fill="#2a3244"/><path d="M278 98h36l-8-12h-20z" fill="#2a3244"/><circle cx="296" cy="102" r="6" class="a"/>'
+    + '<g fill="#2f384c"><rect x="40" y="120" width="186" height="8" rx="2"/><rect x="46" y="128" width="4" height="160"/><rect x="216" y="128" width="4" height="160"/><rect x="18" y="140" width="3" height="148"/></g>'
+    + '<rect x="50" y="132" width="166" height="96" fill="#f4ecdc" fill-opacity=".04" stroke="#3a4458" stroke-width="1.5"/>'
+    + '<g fill="#3a4458"><rect x="66" y="242" width="134" height="7" rx="2"/><rect x="76" y="249" width="4" height="39"/><rect x="186" y="249" width="4" height="39"/></g>'
+    + '<rect x="146" y="228" width="34" height="14" rx="3" class="a"/><rect x="146" y="233" width="34" height="2" fill="#1a1206" opacity=".35"/>'
+    + '<circle cx="19.5" cy="134" r="11" fill="none" stroke="#5fc0b2" stroke-width="2.5"/><text x="19.5" y="138.5" text-anchor="middle" font-size="12" font-weight="700" fill="#5fc0b2" font-family="sans-serif">B</text>',
+  table: '<defs><radialGradient id="g"><stop offset="0" class="stop" stop-opacity=".5"/><stop offset="1" class="stop" stop-opacity="0"/></radialGradient></defs>'
+    + '<rect width="390" height="300" class="sky"/>'
+    + '<rect x="40" y="40" width="110" height="140" rx="4" fill="#0e1626" stroke="#3a2a26" stroke-width="6"/>'
+    + '<path d="M95 40v140M40 110h110" stroke="#3a2a26" stroke-width="4"/><circle cx="70" cy="74" r="12" fill="#f4ecdc" opacity=".75"/>'
+    + '<circle cx="236" cy="170" r="160" fill="url(#g)"/>'
+    + '<path d="M236 0v76" stroke="#4a3632" stroke-width="2"/><path d="M208 100h56l-14-24h-28z" fill="#4a3632"/>'
+    + '<polygon points="212,100 260,100 330,232 142,232" class="a" opacity=".10"/>'
+    + '<rect x="110" y="232" width="260" height="10" rx="2" fill="#4a3632"/><rect x="128" y="242" width="8" height="58" fill="#3a2a26"/><rect x="344" y="242" width="8" height="58" fill="#3a2a26"/>'
+    + '<rect x="186" y="214" width="70" height="18" rx="2" class="a" opacity=".55" transform="rotate(-6 221 223)"/><rect x="196" y="208" width="70" height="18" rx="2" class="a" opacity=".8" transform="rotate(4 231 217)"/><rect x="206" y="204" width="70" height="18" rx="2" class="a"/>'
+    + '<circle cx="241" cy="213" r="5" fill="none" stroke="#1a1206" stroke-width="1.5" opacity=".5"/>'
+    + '<rect x="150" y="214" width="26" height="18" rx="3" fill="#2a1d1a"/><rect x="296" y="220" width="40" height="12" rx="3" fill="#1b1b22"/><rect x="299" y="222" width="34" height="8" rx="2" fill="#5fc0b2" opacity=".8"/>',
+  church: '<rect width="390" height="300" class="sky"/>'
+    + '<polygon points="120,40 160,40 230,300 30,300" class="a" opacity=".08"/><polygon points="230,40 270,40 370,300 170,300" class="a" opacity=".08"/>'
+    + '<path d="M110 150V70a30 30 0 0 1 60 0v80z" class="a" opacity=".85"/><path d="M220 150V70a30 30 0 0 1 60 0v80z" class="a" opacity=".85"/>'
+    + '<path d="M140 40v110M110 96h60M250 40v110M220 96h60" style="stroke:var(--sky)" stroke-width="3"/>'
+    + '<rect x="20" y="214" width="350" height="12" rx="3" fill="#3a2a26"/><rect x="20" y="226" width="350" height="22" fill="#2a1d1a"/>'
+    + '<rect y="262" width="390" height="12" rx="3" fill="#3a2a26"/><rect y="274" width="390" height="26" fill="#2a1d1a"/>'
+    + '<g fill="#1a1412"><circle cx="120" cy="200" r="12"/><path d="M100 226q20-30 40 0z"/><circle cx="262" cy="198" r="12"/><path d="M242 226q20-32 40 0z"/></g>'
+    + '<g fill="#0a0807"><circle cx="196" cy="246" r="13"/><path d="M174 274q22-34 44 0z"/></g>',
+  door: '<defs><radialGradient id="g"><stop offset="0" class="stop" stop-opacity=".45"/><stop offset="1" class="stop" stop-opacity="0"/></radialGradient></defs>'
+    + '<rect width="390" height="300" class="sky"/>'
+    + '<circle cx="200" cy="170" r="170" fill="url(#g)"/>'
+    + '<rect x="140" y="50" width="120" height="216" fill="#2c2620"/><rect x="150" y="60" width="100" height="206" class="a" opacity=".92"/>'
+    + '<path d="M150 60l46 14v200l-46-8z" fill="#3b3128"/><circle cx="188" cy="176" r="3" class="a"/>'
+    + '<polygon points="150,266 250,266 340,300 60,300" class="a" opacity=".30"/>'
+    + '<g fill="#1a1206"><circle cx="226" cy="132" r="15"/><path d="M204 266l2-94q20-22 40 0l2 94z"/><rect x="258" y="120" width="3" height="146"/></g>'
+    + '<rect x="290" y="80" width="38" height="26" rx="3" fill="#2c2620"/><text x="309" y="98" text-anchor="middle" font-size="14" font-weight="700" class="a" font-family="sans-serif">12</text>'
+};
+
+/* ===== HISTOIRE ===== */
+var ENDINGS = ["silence","recompense","aveu","don"];
+var DEPTH = { intro:0, start:1, maison:2, lucien:2, dimanche:3 };
+
+var SCENES = {
+  intro: { mood:"nuit", ill:"bus" },
+
+  start: {
+    mood:"nuit", ill:"bus", when:"Vendredi, 19 h 10", where:"L’arrêt de bus",
+    text:[
+      "Tu sors du travail, épuisé. Sur le banc de l’arrêt, un portefeuille en cuir. Personne autour.",
+      "Tu l’ouvres : 400 € en billets, et une carte d’identité au nom d’Adrien Lucien, 74 ans. Il habite ta commune.",
+      "Ton téléphone vibre. Ton loyer a trois jours de retard, et ta mère t’écrit que son frigo vient de lâcher."
+    ],
+    choices:[
+      { label:"Je le glisse dans mon sac. Je verrai chez moi.", to:"maison" },
+      { label:"Je le rapporte tout de suite à son propriétaire.", to:"lucien" }
+    ]
+  },
+
+  maison: {
+    mood:"ombre", ill:"table", when:"Vendredi, 21 h", where:"Chez toi",
+    text:[
+      "Tu poses le portefeuille sur la table et tu comptes les billets. Quatre cents euros : le loyer, plus le frigo de ta mère.",
+      "Le téléphone sonne. C’est Kévin. « Garde l’argent. Dépose le portefeuille dans une boîte aux lettres. Il ne saura jamais que c’était toi. »"
+    ],
+    choices:[
+      { label:"Je garde l’argent. Kévin n’a pas tort.", to:"dimanche" },
+      { label:"Je raccroche. Demain matin, je rapporte tout.", to:"lucien" }
+    ]
+  },
+
+  dimanche: {
+    mood:"ombre", ill:"church", when:"Dimanche", where:"À l’église",
+    text:[
+      "Le loyer est payé. Le frigo de ta mère est réparé.",
+      "Au culte, le pasteur demande des prières pour la famille Lucien : l’épouse d’Adrien est malade, et il a perdu hier l’argent de ses médicaments.",
+      "Adrien est assis deux rangs devant toi. Il se retourne et te sourit, fatigué."
+    ],
+    choices:[
+      { label:"À la sortie, je vais le voir. J’avoue tout et je m’engage à rembourser.", to:"fin_aveu" },
+      { label:"Je baisse les yeux. Personne ne saura.", to:"fin_silence" }
+    ]
+  },
+
+  lucien: {
+    mood:"jour", ill:"door", when:"Le lendemain", where:"Chez M. Lucien",
+    text:[
+      "Tu sonnes. M. Lucien ouvre, le visage creusé par l’inquiétude. Quand il voit son portefeuille, il pose la main sur son cœur.",
+      "« Ces 400 euros, c’étaient les médicaments de ma femme. Je n’ai pas dormi de la nuit. »",
+      "Il sort un billet de 50 € et te le tend. « Prenez, mon fils. »"
+    ],
+    choices:[
+      { label:"J’accepte, merci. Mon loyer et le frigo de ma mère me pèsent aussi.", to:"fin_recompense" },
+      { label:"Je refuse, et je l’accompagne à la pharmacie.", to:"fin_don" }
+    ]
+  },
+
+  fin_silence: {
+    ending:"silence", mood:"ombre", ill:"table", title:"Le poids du secret",
+    text:[
+      "Les semaines passent. Le loyer est payé, le frigo marche. Mais chaque dimanche, tu évites le regard d’Adrien.",
+      "Quand l’église organise une collecte pour les médicaments de son épouse, tu donnes 20 €. Avec une boule dans la gorge.",
+      "Le secret ne t’a rien coûté en argent. Il t’a coûté la paix."
+    ],
+    lesson:"Ce qu’on cache ne disparaît pas : cela pèse. Et la porte reste ouverte, il n’est jamais trop tard pour aller voir celui qu’on a lésé.",
+    verses:[{ text:"Celui qui cache ses transgressions ne prospère point.", ref:"Proverbes 28:13" }],
+    cta:{ label:"Je vais le voir maintenant", to:"fin_aveu" }
+  },
+
+  fin_aveu: {
+    ending:"aveu", mood:"lumiere", ill:"church", title:"Le courage d’avouer",
+    text:[
+      "Ton cœur bat à tout rompre. Tu avoues. Adrien se tait un long moment, puis te serre la main : « Merci de me l’avoir dit. »",
+      "Tu le rembourses petit à petit. Un mois plus tard, il t’invite à déjeuner avec son épouse.",
+      "Pour la première fois depuis des semaines, tu respires."
+    ],
+    lesson:"Avouer fait mal une fois. Se cacher fait mal tous les jours. Le pardon commence là où le mensonge s’arrête, comme pour Zachée qui rendit ce qu’il avait pris.",
+    verses:[{ text:"Si nous confessons nos péchés, il est fidèle et juste pour nous les pardonner.", ref:"1 Jean 1:9" }]
+  },
+
+  fin_recompense: {
+    ending:"recompense", mood:"lumiere", ill:"door", title:"Fidèle dans les petites choses",
+    text:[
+      "Tu prends le billet. M. Lucien appelle son épouse, qui te remercie en pleurant depuis son fauteuil.",
+      "Les 50 € couvrent la moitié du frigo. Ce n’est pas la fin de tes soucis.",
+      "Mais tu rentres léger : tu n’as rien à cacher."
+    ],
+    lesson:"L’honnêteté ne règle pas tous les problèmes, mais elle t’enlève le plus lourd : la peur d’être découvert.",
+    verses:[{ text:"Celui qui est fidèle dans les moindres choses l’est aussi dans les grandes.", ref:"Luc 16:10" }]
+  },
+
+  fin_don: {
+    ending:"don", mood:"lumiere", ill:"door", title:"Plus de bonheur à donner",
+    text:[
+      "Tu refuses le billet et tu marches avec lui jusqu’à la pharmacie. Il s’appuie sur ton bras dans la file d’attente.",
+      "De retour chez lui, son épouse, alitée, demande à te voir. Elle prend ta main et prie pour toi.",
+      "Ton loyer est toujours en retard. Mais lundi, tu appelles ton propriétaire sans honte, et il t’accorde dix jours."
+    ],
+    lesson:"Donner sans rien attendre libère. Dieu ne promet pas un résultat immédiat, mais il promet de prendre soin de ceux qui le placent en premier.",
+    verses:[
+      { text:"Il y a plus de bonheur à donner qu’à recevoir.", ref:"Actes 20:35" },
+      { text:"Cherchez premièrement le royaume et la justice de Dieu ; et toutes ces choses vous seront données par-dessus.", ref:"Matthieu 6:33" }
+    ]
+  }
+};
+
+var ENDING_TITLES = {
+  silence:"Le poids du secret",
+  recompense:"Fidèle dans les petites choses",
+  aveu:"Le courage d’avouer",
+  don:"Plus de bonheur à donner"
+};
+
+/* ===== ÉTAT ===== */
+var state = { scene:"intro", found:[] };
+
+function loadFound(){
+  try{
+    var raw = localStorage.getItem("portefeuille-fins");
+    if(raw){ var arr = JSON.parse(raw); if(Array.isArray(arr)) return arr; }
+  }catch(e){}
+  return [];
+}
+function saveFound(){
+  try{ localStorage.setItem("portefeuille-fins", JSON.stringify(state.found)); }catch(e){}
+}
+
+/* ===== RENDU ===== */
+var app = document.getElementById("app");
+var ill = document.getElementById("ill");
+var currentIll = null;
+var ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
+function paras(list){ return list.map(function(t){ return "<p>" + t + "</p>"; }).join(""); }
+
+function render(){
+  var sc = SCENES[state.scene];
+  document.body.setAttribute("data-mood", sc.mood || "nuit");
+  if(currentIll !== sc.ill){
+    ill.innerHTML = '<svg class="ill" viewBox="0 0 390 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' + ILL[sc.ill] + '</svg>';
+    currentIll = sc.ill;
+  }
+  var n = state.found.length;
+  var depth = sc.ending ? 4 : DEPTH[state.scene];
+  var html = '<section class="scene">';
+  html += '<ol class="dots" aria-label="Progression : étape ' + depth + ' sur 4">';
+  for(var i = 0; i < 4; i++){ html += '<li class="' + (i < depth ? 'on' : '') + '"></li>'; }
+  html += '</ol>';
+
+  if(state.scene === "intro"){
+    html += '<p class="kicker">Une histoire où tu décides</p>';
+    html += '<h1>Le<br><em>Portefeuille</em></h1>';
+    html += '<div class="story"><p>Tu es le héros. À chaque étape, deux choix. Ce que tu choisis change la suite, et la fin.</p></div>';
+    html += '<ul class="tiles" aria-label="Fins découvertes">';
+    ENDINGS.forEach(function(id, i){
+      var on = state.found.indexOf(id) !== -1;
+      html += '<li class="' + (on ? 'on' : '') + '" aria-label="Fin ' + (i + 1) + (on ? ' : ' + ENDING_TITLES[id] : ' : pas encore trouvée') + '">' + (i + 1) + '</li>';
+    });
+    html += '</ul>';
+    html += '<p class="count">' + (n ? n + ' fin' + (n > 1 ? 's' : '') + ' sur 4 déjà trouvée' + (n > 1 ? 's' : '') + '.' : 'Quatre fins possibles. Chacune t’apprend quelque chose.') + '</p>';
+    html += '<button class="btn" type="button" data-to="start">Commencer ' + ARROW + '</button>';
+  } else if(sc.ending){
+    html += '<p class="badge">Fin ' + (ENDINGS.indexOf(sc.ending) + 1) + ' sur 4</p>';
+    html += '<h2>' + sc.title + '</h2>';
+    html += '<div class="story">' + paras(sc.text) + '</div>';
+    html += '<div class="lesson"><p class="lesson-label">La leçon</p><p class="lesson-text">' + sc.lesson + '</p>';
+    sc.verses.forEach(function(v){
+      html += '<div class="verse"><p>« ' + v.text + ' »</p><p class="ref">' + v.ref + '</p></div>';
+    });
+    html += '</div>';
+    html += '<p class="label">Tes fins · ' + n + '/4</p>';
+    html += '<ul class="tracker" aria-label="Fins découvertes">';
+    ENDINGS.forEach(function(id, i){
+      var on = state.found.indexOf(id) !== -1;
+      html += '<li class="' + (on ? 'on' : '') + '"><span class="n">FIN ' + (i + 1) + '</span><span class="t">' + (on ? ENDING_TITLES[id] : '? ? ?') + '</span></li>';
+    });
+    html += '</ul>';
+    html += '<p class="count" style="margin:.7rem 0 0">' + (n >= 4 ? 'Tu as trouvé les 4 fins.' : 'Il te reste ' + (4 - n) + ' fin' + (4 - n > 1 ? 's' : '') + ' à découvrir.') + '</p>';
+    html += '<div class="actions">';
+    if(sc.cta){ html += '<button class="btn" type="button" data-to="' + sc.cta.to + '">' + sc.cta.label + '</button>'; }
+    html += '<button class="btn' + (sc.cta ? ' ghost' : '') + '" type="button" data-to="start">Rejouer, autre chemin</button>';
+    html += '<a class="btn ghost" href="../">Voir les autres histoires</a>';
+    html += '</div>';
+    html += '<p class="foot">Versets : traduction Louis Segond (1910).</p>';
+  } else {
+    html += '<p class="kicker">' + sc.when + '</p>';
+    html += '<p class="where">' + sc.where + '</p>';
+    html += '<div class="story">' + paras(sc.text) + '</div>';
+    html += '<p class="label">Que fais-tu ?</p>';
+    html += '<div class="choices">';
+    sc.choices.forEach(function(c, i){
+      html += '<button class="choice" type="button" data-to="' + c.to + '"><span class="letter">' + (i === 0 ? 'A' : 'B') + '</span><span>' + c.label + '</span></button>';
+    });
+    html += '</div>';
+  }
+
+  html += '</section>';
+  app.innerHTML = html;
+  window.scrollTo(0, 0);
+}
+
+/* ===== SON : musique de fond + voix off des textes (pas des choix) ===== */
+var music = new Audio("../commun/musique.mp3");
+music.loop = true;
+var MUSIC_VOL = 0.30, MUSIC_DUCK = 0.10;
+music.volume = MUSIC_VOL;
+var voice = null;
+var sound = { music:true, voice:true, hasVoice:false };
+
+function safePlay(a){
+  try{ var p = a.play(); if(p && p.catch) p.catch(function(){}); }catch(e){}
+}
+function startMusic(){ if(sound.music) safePlay(music); }
+function stopVoice(){
+  if(voice){ try{ voice.pause(); }catch(e){} voice = null; }
+  music.volume = MUSIC_VOL;
+}
+function playVoice(id){
+  stopVoice();
+  if(!sound.voice || !sound.hasVoice || id === "intro") return;
+  var a = new Audio("audio/vo-" + id + ".mp3");
+  a.addEventListener("play", function(){ music.volume = MUSIC_DUCK; });
+  a.addEventListener("ended", function(){ if(voice === a){ voice = null; music.volume = MUSIC_VOL; } });
+  a.addEventListener("error", function(){ if(voice === a){ voice = null; music.volume = MUSIC_VOL; } });
+  voice = a;
+  safePlay(a);
+}
+
+var togMusic = document.getElementById("tog-music");
+var togVoice = document.getElementById("tog-voice");
+togMusic.addEventListener("click", function(){
+  sound.music = !sound.music;
+  togMusic.setAttribute("aria-pressed", String(sound.music));
+  if(sound.music) safePlay(music); else music.pause();
+});
+togVoice.addEventListener("click", function(){
+  sound.voice = !sound.voice;
+  togVoice.setAttribute("aria-pressed", String(sound.voice));
+  if(sound.voice) playVoice(state.scene); else stopVoice();
+});
+
+/* La voix off n'apparaît que si les fichiers audio sont bien présents. */
+try{
+  fetch("audio/vo-start.mp3", { method:"HEAD" }).then(function(r){
+    if(r.ok){ sound.hasVoice = true; togVoice.hidden = false; }
+  }).catch(function(){});
+}catch(e){}
+
+function go(id){
+  if(!SCENES[id]) return;
+  state.scene = id;
+  var sc = SCENES[id];
+  if(sc.ending && state.found.indexOf(sc.ending) === -1){
+    state.found.push(sc.ending);
+    saveFound();
+  }
+  render();
+  startMusic();
+  playVoice(id);
+}
+
+app.addEventListener("click", function(e){
+  var el = e.target.closest("[data-to]");
+  if(el) go(el.getAttribute("data-to"));
+});
+
+/* ===== DÉMARRAGE ===== */
+function start(saved){
+  state.found = loadFound();
+  if(saved && saved.found){
+    saved.found.forEach(function(id){ if(state.found.indexOf(id) === -1) state.found.push(id); });
+  }
+  if(saved && saved.scene && SCENES[saved.scene]) state.scene = saved.scene;
+  render();
+}
+if(window.claude && window.claude.hot){
+  if(window.claude.hot.snapshot){ window.claude.hot.snapshot(function(){ return { scene:state.scene, found:state.found }; }); }
+  if(window.claude.hot.ready){ window.claude.hot.ready(start); } else { start(window.claude.hot.data || {}); }
+} else {
+  start({});
+}
+</script>
+</body>
+</html>
