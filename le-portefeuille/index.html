@@ -391,7 +391,7 @@ function render(){
 /* ===== SON : musique de fond + voix off des textes (pas des choix) ===== */
 var music = new Audio("../commun/musique.mp3");
 music.loop = true;
-var MUSIC_VOL = 0.30, MUSIC_DUCK = 0.10;
+var MUSIC_VOL = 0.70, MUSIC_DUCK = 0.30;
 music.volume = MUSIC_VOL;
 var voice = null;
 var sound = { music:true, voice:true, hasVoice:false };
@@ -459,6 +459,7 @@ function go(id){
   }
   sound.finale = !!(sc.ending && state.found.length >= 4);
   render();
+  if(id === "start"){ try{ music.currentTime = 0; }catch(e){} }
   startMusic();
   playVoice(id);
   if(sound.finale && !voice) fadeMusic();
